@@ -15,6 +15,7 @@ from pygments.lexers import get_lexer_for_filename, TextLexer
 from pygments.formatters import HtmlFormatter
 from django.db.models import Q 
 from .models import Category, Download
+import shutil
 
 
 from .models import Project
@@ -378,30 +379,35 @@ def project_detail(request, pk):
     })
 
 
+
+
 @login_required
 def download_project_zip(request, pk):
     project = get_object_or_404(Project, pk=pk)
 
-    # Solo si es gratis o lo subió el usuario
-    if project.is_free or project.uploaded_by == request.user:
-        zip_name = f"{project.title.replace(' ', '_')}.zip"
-        zip_path = os.path.join(settings.MEDIA_ROOT, project.folder_id, zip_name)
+    # ✅ Permitir si es gratis, si el usuario lo subió, o si lo compró
+    has_access = (
+        project.is_free or
+        project.uploaded_by == request.user or
+        Purchase.objects.filter(user=request.user, project=project).exists()
+    )
 
-        # Si no existe el zip, lo reconstruimos
-        if not os.path.exists(zip_path):
-            import shutil
-            shutil.make_archive(
-                base_name=zip_path.replace('.zip', ''),
-                format='zip',
-                root_dir=os.path.join(settings.MEDIA_ROOT, project.folder_id)
-            )
+    if not has_access:
+        return HttpResponseForbidden("No tienes permiso para descargar este archivo.")
 
-        # REGISTRO DE DESCARGA
-        Download.objects.get_or_create(user=request.user, project=project)
+    zip_name = f"{project.title.replace(' ', '_')}.zip"
+    zip_path = os.path.join(settings.MEDIA_ROOT, project.folder_id, zip_name)
 
-        return FileResponse(open(zip_path, 'rb'), as_attachment=True, filename=smart_str(zip_name))
+    if not os.path.exists(zip_path):
+        shutil.make_archive(
+            base_name=zip_path.replace('.zip', ''),
+            format='zip',
+            root_dir=os.path.join(settings.MEDIA_ROOT, project.folder_id)
+        )
 
-    return HttpResponseForbidden("No tienes permiso para descargar este archivo.")
+    Download.objects.get_or_create(user=request.user, project=project)
+
+    return FileResponse(open(zip_path, 'rb'), as_attachment=True, filename=smart_str(zip_name))
 
 
 
