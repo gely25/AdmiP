@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block title %}Historial de descargas{% endblock %}
+
+{% block content %}
+<h2>📥 Historial de tus descargas</h2>
+
+{% if downloads %}
+    <ul>
+    {% for entry in downloads %}
+        <li>
+            <strong>{{ entry.project.title }}</strong> —
+            descargado el {{ entry.timestamp|date:"d M Y, H:i" }}
+            —
+            <a href="{% url 'download_project' entry.project.id %}">🔁 Volver a descargar</a>
+        </li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>Aún no has descargado ningún proyecto.</p>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+{% block title %}Editar Proyecto - GitShare{% endblock %}
+
+{% block content %}
+<div style="max-width: 700px; margin: auto; padding: 2rem;">
+    <h2>Editar Proyecto</h2>
+
+    {% if error %}
+        <p style="color: red;">{{ error }}</p>
+    {% endif %}
+
+    <form method="post">
+        {% csrf_token %}
+
+        <label for="title">Título:</label><br>
+        <input type="text" name="title" value="{{ project.title }}" class="form-control" required><br><br>
+
+        <label for="description">Descripción:</label><br>
+        <textarea name="description" rows="4" class="form-control">{{ project.description }}</textarea><br><br>
+
+        <label for="type">Tipo de proyecto:</label><br>
+        <select name="type" class="form-control">
+            {% for key, label in project.TYPE_CHOICES %}
+                <option value="{{ key }}" {% if key == project.type %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+        </select><br><br>
+
+        <label>
+            <input type="checkbox" id="is_free" name="is_free" {% if project.is_free %}checked{% endif %}>
+            Es gratuito
+        </label><br><br>
+
+        <label for="price">Precio:</label><br>
+        <input type="number" step="0.01" name="price" id="price" value="{{ project.price }}" class="form-control"><br><br>
+
+        <label for="categories">Categorías:</label><br>
+        <select name="categories[]" id="category-select" multiple>
+            {% for cat in categories %}
+                <option value="{{ cat.id }}" {% if cat.id in selected_categories %}selected{% endif %}>
+                    {{ cat.name }}
+                </option>
+            {% endfor %}
+        </select><br><br>
+
+        <button type="submit" class="btn btn-primary">Guardar cambios</button>
+        <a href="{% url 'profile' %}" class="btn btn-secondary">Cancelar</a>
+    </form>
+</div>
+
+<!-- Select2 CDN -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+<script>
+    $(document).ready(function() {
+        // Inicializar Select2
+        $('#category-select').select2({
+            placeholder: 'Selecciona una o más categorías',
+            allowClear: true,
+            width: '100%'
+        });
+
+        // Habilitar/deshabilitar el campo precio
+        const isFreeCheckbox = document.getElementById('is_free');
+        const priceInput = document.getElementById('price');
+
+        function togglePrice() {
+            priceInput.disabled = isFreeCheckbox.checked;
+        }
+
+        // Al cargar
+        togglePrice();
+
+        // Al cambiar el checkbox
+        isFreeCheckbox.addEventListener('change', togglePrice);
+    });
+</script>
+{% endblock %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,118 @@
+{% extends "home.html" %}
+
+{% block content %}
+<div class="container py-4">
+  <header class="page-header mb-4">
+    <h1 class="display-5 fw-bold text-primary">
+      <i class="fas fa-hand-holding-usd me-2"></i>{{ title }}
+    </h1>
+    <p class="lead text-muted">Registrar nuevo préstamo para un empleado</p>
+  </header>
+
+  <div class="row">
+    <div class="col-lg-8 mx-auto">
+      <div class="card shadow-sm mb-4">
+        <div class="card-header bg-primary text-white py-3">
+          <h5 class="mb-0">
+            <i class="fas fa-money-check-alt me-2"></i>Información del Préstamo
+          </h5>
+        </div>
+        <div class="card-body p-4">
+          <form method="post">
+            {% csrf_token %}
+
+            {% for field in form %}
+              <div class="mb-4">
+                <label for="{{ field.id_for_label }}" class="form-label">
+                  {% if field.name == 'empleado' %}
+                    <i class="fas fa-user text-primary me-2"></i>
+                  {% elif field.name == 'tipo_prestamo' %}
+                    <i class="fas fa-file-invoice-dollar text-primary me-2"></i>
+                  {% elif field.name == 'fecha_prestamo' %}
+                    <i class="fas fa-calendar-alt text-primary me-2"></i>
+                  {% elif field.name == 'monto' %}
+                    <i class="fas fa-dollar-sign text-primary me-2"></i>
+                  {% elif field.name == 'interes' %}
+                    <i class="fas fa-percent text-primary me-2"></i>
+                  {% elif field.name == 'monto_pagar' %}
+                    <i class="fas fa-money-bill-wave text-primary me-2"></i>
+                  {% elif field.name == 'numero_cuotas' %}
+                    <i class="fas fa-sort-numeric-up text-primary me-2"></i>
+                  {% elif field.name == 'cuota_mensual' %}
+                    <i class="fas fa-calendar-week text-primary me-2"></i>
+                  {% elif field.name == 'saldo' %}
+                    <i class="fas fa-wallet text-primary me-2"></i>
+                  {% else %}
+                    <i class="fas fa-edit text-primary me-2"></i>
+                  {% endif %}
+                  {{ field.label }}
+                </label>
+                {{ field }}
+                {% if field.errors %}
+                  <div class="text-danger mt-1">{{ field.errors }}</div>
+                {% endif %}
+              </div>
+            {% endfor %}
+
+            {% for hidden in form.hidden_fields %}
+              {{ hidden }}
+            {% endfor %}
+
+            <div class="d-flex justify-content-end gap-2 mt-4">
+              <a href="{% url 'Nomina:listar_prestamos' %}" class="btn btn-outline-secondary">
+                <i class="fas fa-times me-2"></i>Cancelar
+              </a>
+              <button type="submit" class="btn btn-primary px-4">
+                <i class="fas fa-save me-2"></i>Guardar Préstamo
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const montoInput = document.querySelector('input[name="monto"]');
+  const tasaSelect = document.querySelector('select[name="tipo_prestamo"]');
+  const interesInput = document.querySelector('input[name="interes"]');
+  const montoPagarInput = document.querySelector('input[name="monto_pagar"]');
+  const cuotasInput = document.querySelector('input[name="numero_cuotas"]');
+  const cuotaMensualInput = document.querySelector('input[name="cuota_mensual"]');
+  const saldoInput = document.querySelector('input[name="saldo"]');
+
+  // Dataset de tasas por tipo de préstamo (Django lo inyecta)
+  const tasas = {
+    {% for tipo in form.fields.tipo_prestamo.queryset %}
+      "{{ tipo.id }}": {{ tipo.tasa }},
+    {% endfor %}
+  };
+
+  function calcularPrestamo() {
+    const monto = parseFloat(montoInput.value) || 0;
+    const tipoId = tasaSelect.value;
+    const tasa = tasas[tipoId] || 0;
+    const interes = monto * (tasa / 100);
+    const montoPagar = monto + interes;
+    const cuotas = parseInt(cuotasInput.value) || 1;
+    const cuotaMensual = montoPagar / cuotas;
+
+    interesInput.value = interes.toFixed(2);
+    montoPagarInput.value = montoPagar.toFixed(2);
+    cuotaMensualInput.value = cuotaMensual.toFixed(2);
+    saldoInput.value = montoPagar.toFixed(2);
+  }
+
+  [montoInput, tasaSelect, cuotasInput].forEach(el => {
+    el?.addEventListener('input', calcularPrestamo);
+    el?.addEventListener('change', calcularPrestamo);
+  });
+
+  calcularPrestamo(); // Cálculo inicial
+});
+</script>
+
+
+{% endblock %}

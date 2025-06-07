@@ -128,3 +128,7 @@ import os
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+LOGIN_URL = 'login'  # si usas @login_required, redirige a esta vista
+LOGIN_REDIRECT_URL = '/'  # después del login exitoso
+LOGOUT_REDIRECT_URL = 'login'  # después del logout, vuelve al login

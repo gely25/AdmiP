@@ -1,0 +1,613 @@
+{% extends 'base.html' %}
+{% block title %}Inicio - GitShare{% endblock %}
+
+{% block content %}
+<!-- Select2 CSS -->
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<!-- jQuery y Select2 JS -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+<style>
+    body {
+        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 25%, #533a7d 50%, #7b4397 75%, #9b59b6 100%);
+        min-height: 100vh;
+        margin: 0;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    .main-container {
+        background: rgba(255, 255, 255, 0.08);
+        backdrop-filter: blur(15px);
+        border-radius: 20px;
+        margin: 20px;
+        padding: 30px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+    }
+    
+    .hero-section {
+        text-align: center;
+        margin-bottom: 40px;
+        color: white;
+    }
+    
+    .hero-title {
+        font-size: 3.5rem;
+        font-weight: bold;
+        margin-bottom: 20px;
+        color: #4a9eff;
+        filter: drop-shadow(0 2px 8px rgba(74, 158, 255, 0.3));
+    }
+    
+    .hero-subtitle {
+        font-size: 1.2rem;
+        opacity: 0.8;
+        margin-bottom: 30px;
+        color: #c7d2fe;
+    }
+    
+    .container-flex {
+        display: flex;
+        gap: 30px;
+    }
+    
+    .sidebar {
+        width: 280px;
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(15px);
+        padding: 25px;
+        border-radius: 20px;
+        height: fit-content;
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    }
+    
+    .sidebar h3 {
+        color: #e2e8f0;
+        font-size: 1.5rem;
+        margin-bottom: 20px;
+        font-weight: 600;
+    }
+    
+    .type-link {
+        display: block;
+        padding: 12px 16px;
+        text-decoration: none;
+        color: rgba(226, 232, 240, 0.8);
+        border-radius: 10px;
+        margin-bottom: 5px;
+        transition: all 0.3s ease;
+        font-weight: 500;
+    }
+    
+    .type-link:hover {
+        background: rgba(155, 89, 182, 0.2);
+        color: #c39bd3;
+        transform: translateX(5px);
+    }
+    
+    .active-type {
+        background: linear-gradient(45deg, #667eea, #764ba2);
+        color: white !important;
+        font-weight: bold;
+        box-shadow: 0 4px 15px rgba(118, 75, 162, 0.4);
+    }
+    
+    .project-list {
+        flex: 1;
+    }
+    
+    .search-section {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(15px);
+        padding: 25px;
+        border-radius: 20px;
+        margin-bottom: 30px;
+        border: 1px solid rgba(255, 255, 255, 0.15);
+    }
+    
+    .search-form {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 15px;
+        align-items: center;
+    }
+    
+    .search-input {
+        flex: 1;
+        min-width: 300px;
+        padding: 12px 20px;
+        border: none;
+        border-radius: 50px;
+        background: rgba(255, 255, 255, 0.15);
+        color: white;
+        font-size: 16px;
+        outline: none;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    
+    .search-input::placeholder {
+        color: #c7d2fe;
+    }
+    
+    .search-filters {
+        display: flex;
+        gap: 20px;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+    
+    .checkbox-group {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: #e2e8f0;
+        font-weight: 500;
+    }
+    
+    .checkbox-group input[type="checkbox"] {
+        width: 18px;
+        height: 18px;
+        accent-color: #764ba2;
+    }
+    
+    .category-select-wrapper {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: #e2e8f0;
+        font-weight: 500;
+    }
+    
+    .search-btn {
+        padding: 12px 30px;
+        background: linear-gradient(45deg, #667eea, #764ba2);
+        color: white;
+        border: none;
+        border-radius: 50px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(118, 75, 162, 0.4);
+    }
+    
+    .search-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(118, 75, 162, 0.6);
+    }
+    
+    .projects-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+        gap: 25px;
+    }
+    
+    .project-card {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(15px);
+        border-radius: 20px;
+        padding: 25px;
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        transition: all 0.3s ease;
+        color: white;
+    }
+    
+    .project-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+        background: rgba(255, 255, 255, 0.15);
+        border: 1px solid rgba(155, 89, 182, 0.4);
+    }
+    
+    .project-title {
+        font-size: 1.5rem;
+        font-weight: bold;
+        margin-bottom: 15px;
+        color: #c39bd3;
+    }
+    
+    .project-meta {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 10px;
+        font-size: 0.9rem;
+        opacity: 0.8;
+        color: #c7d2fe;
+    }
+    
+    .project-description {
+        margin: 15px 0;
+        line-height: 1.6;
+        opacity: 0.9;
+        color: #e2e8f0;
+    }
+    
+    .stars {
+        color: #ffd700;
+        font-size: 18px;
+        margin: 15px 0;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+    }
+    
+    .price-tag {
+        display: inline-block;
+        padding: 8px 16px;
+        border-radius: 20px;
+        font-weight: bold;
+        margin: 10px 0;
+    }
+    
+    .price-free {
+        background: linear-gradient(45deg, #38a169, #48bb78);
+        color: white;
+    }
+    
+    .price-paid {
+        background: linear-gradient(45deg, #ed8936, #f6ad55);
+        color: white;
+    }
+    
+    .categories-list {
+        margin: 15px 0;
+        font-size: 0.9rem;
+        opacity: 0.8;
+        color: #c7d2fe;
+    }
+    
+    .category-tag {
+        display: inline-block;
+        background: rgba(155, 89, 182, 0.2);
+        padding: 4px 12px;
+        border-radius: 15px;
+        margin: 2px;
+        font-size: 0.8rem;
+        color: #c39bd3;
+        border: 1px solid rgba(155, 89, 182, 0.3);
+    }
+    
+    .view-project-btn {
+        display: inline-block;
+        padding: 12px 25px;
+        background: linear-gradient(45deg, #667eea, #764ba2);
+        color: white;
+        text-decoration: none;
+        border-radius: 25px;
+        font-weight: bold;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(118, 75, 162, 0.4);
+        margin-top: 15px;
+    }
+    
+    .view-project-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(118, 75, 162, 0.6);
+        color: white;
+        text-decoration: none;
+    }
+    
+    .no-projects {
+        text-align: center;
+        color: #c7d2fe;
+        font-size: 1.2rem;
+        margin: 40px 0;
+        opacity: 0.7;
+    }
+    
+    /* Select2 custom styling */
+    .select2-container--default .select2-selection--multiple {
+        background: rgba(255, 255, 255, 0.15);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 25px;
+        min-height: 40px;
+        padding: 5px;
+    }
+    
+    .select2-container--default .select2-selection--multiple .select2-selection__choice {
+        background: linear-gradient(45deg, #667eea, #764ba2);
+        border: none;
+        border-radius: 15px;
+        color: white;
+        font-weight: 500;
+    }
+    
+    .select2-container--default .select2-dropdown {
+        background: #1a1a2e;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .select2-container--default .select2-results__option {
+        color: #e2e8f0;
+    }
+    
+    .select2-container--default .select2-results__option--highlighted[aria-selected] {
+        background: #764ba2;
+    }
+    
+    @media (max-width: 768px) {
+        .container-flex {
+            flex-direction: column;
+        }
+        
+        .sidebar {
+            width: 100%;
+        }
+        
+        .hero-title {
+            font-size: 2.5rem;
+        }
+        
+        .search-form {
+            flex-direction: column;
+            align-items: stretch;
+        }
+        
+        .search-input {
+            min-width: auto;
+        }
+        
+        .projects-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<div class="main-container">
+    <!-- Hero Section -->
+    <div class="hero-section">
+        <h1 class="hero-title">Explora proyectos</h1>
+        <p class="hero-subtitle">Descubre código increíble de desarrolladores talentosos </p>
+    </div>
+
+    <div class="container-flex">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <h3>Tipos de Proyecto</h3>
+            <a href="{% url 'home' %}" class="type-link {% if not selected_type %}active-type{% endif %}">Todos</a>
+            {% for key, label in types.items %}
+                <a href="?type={{ key }}" class="type-link {% if selected_type == key %}active-type{% endif %}">
+                    {{ label }}
+                </a>
+            {% endfor %}
+        </div>
+
+        <!-- Lista de Proyectos -->
+        <div class="project-list">
+            <!-- Search Section -->
+            <div class="search-section">
+                <form method="get" class="search-form">
+                    <input type="text" name="q" placeholder="Buscar proyectos increíbles..." value="{{ query }}" class="search-input">
+                    {% if selected_type %}
+                        <input type="hidden" name="type" value="{{ selected_type }}">
+                    {% endif %}
+
+                    <div class="search-filters">
+                        <div class="checkbox-group">
+                            <input type="checkbox" name="free" id="free-check" {% if is_free %}checked{% endif %}>
+                            <label for="free-check">Solo gratuitos</label>
+                        </div>
+                        
+                        <div class="checkbox-group">
+                            <input type="checkbox" name="paid" id="paid-check" {% if is_paid %}checked{% endif %}>
+                            <label for="paid-check">Solo de pago</label>
+                        </div>
+
+                        <div class="category-select-wrapper">
+                            <label for="category-select"><strong>Categorías:</strong></label>
+                            <select name="categories" id="category-select" multiple="multiple" style="width: 250px;">
+                                {% for cat in categories %}
+                                    <option value="{{ cat.id }}" {% if cat.id in selected_categories %}selected{% endif %}>
+                                        {{ cat.name }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <button type="submit" class="search-btn">🔍 Buscar</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Projects Grid -->
+            {% if projects %}
+                <div class="projects-grid">
+                    {% for project in projects %}
+                    <div class="project-card">
+                        <div class="project-title">{{ project.title }}</div>
+                        
+                        <div class="project-meta">
+                            <span><strong>Tipo:</strong> {{ project.get_type_display }}</span>
+                            <span><strong>Por:</strong> {{ project.uploaded_by.username }}</span>
+                        </div>
+                        
+                        <div class="project-description">
+                            {{ project.description|truncatewords:20 }}
+                        </div>
+
+                        <!-- Estrellas -->
+                        <div class="stars">
+                            ⭐⭐⭐⭐⭐
+                        </div>
+
+                        <!-- Precio -->
+                        {% if project.is_free %}
+                            <div class="price-tag price-free">✨ GRATIS</div>
+                        {% else %}
+                            <div class="price-tag price-paid">💰 ${{ project.price }}</div>
+                        {% endif %}
+
+                        <!-- Categorías -->
+                        <div class="categories-list">
+                            <strong>Categorías:</strong><br>
+                            {% for cat in project.categories.all %}
+                                <span class="category-tag">{{ cat.name }}</span>
+                            {% endfor %}
+                        </div>
+                        
+                        <a href="{% url 'project_detail' project.pk %}" class="view-project-btn">👁️ Ver proyecto</a>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="no-projects">
+                    🔍 No se encontraron proyectos con los criterios seleccionados
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Select2 init -->
+<script>
+    $(document).ready(function() {
+        $('#category-select').select2({
+            placeholder: 'Selecciona categorías...',
+            allowClear: true,
+            width: 'resolve'
+        });
+    });
+</script>
+{% endblock %}
+
+{% comment %} 
+{% extends 'base.html' %}
+{% block title %}Inicio - GitShare{% endblock %}
+
+{% block content %}
+<!-- Select2 CSS -->
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<!-- jQuery y Select2 JS -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+<style>
+    .sidebar {
+        width: 200px;
+        background: #f3f3f3;
+        padding: 1rem;
+        border-right: 1px solid #ddd;
+        height: 100%;
+    }
+    .project-list {
+        flex: 1;
+        padding: 1rem;
+    }
+    .container-flex {
+        display: flex;
+    }
+    .project-card {
+        border: 1px solid #ddd;
+        padding: 1rem;
+        margin-bottom: 1rem;
+        background: white;
+        border-radius: 4px;
+        position: relative;
+    }
+    .active-type {
+        font-weight: bold;
+        color: #007bff;
+    }
+    .type-link {
+        display: block;
+        padding: 4px 0;
+        text-decoration: none;
+        color: #333;
+    }
+    .stars {
+        color: #f5b50a;
+        font-size: 16px;
+        margin-top: 5px;
+    }
+</style>
+
+<div class="container-flex">
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <h3>Tipos de Proyecto</h3>
+        <a href="{% url 'home' %}" class="type-link {% if not selected_type %}active-type{% endif %}">Todos</a>
+        {% for key, label in types.items %}
+            <a href="?type={{ key }}" class="type-link {% if selected_type == key %}active-type{% endif %}">
+                {{ label }}
+            </a>
+        {% endfor %}
+    </div>
+
+    <!-- Lista de Proyectos -->
+    <div class="project-list">
+        <h2>Explora proyectos</h2>
+
+        <form method="get">
+            <input type="text" name="q" placeholder="Buscar..." value="{{ query }}">
+            {% if selected_type %}
+                <input type="hidden" name="type" value="{{ selected_type }}">
+            {% endif %}
+
+            <label><input type="checkbox" name="free" {% if is_free %}checked{% endif %}> Solo gratuitos</label>
+            <label><input type="checkbox" name="paid" {% if is_paid %}checked{% endif %}> Solo de pago</label>
+
+            <label for="category-select"><strong>Categorías:</strong></label>
+            <select name="categories" id="category-select" multiple="multiple" style="width: 250px;">
+                {% for cat in categories %}
+                    <option value="{{ cat.id }}" {% if cat.id in selected_categories %}selected{% endif %}>
+                        {{ cat.name }}
+                    </option>
+                {% endfor %}
+            </select>
+
+            <button type="submit">Buscar</button>
+        </form>
+
+        {% if projects %}
+            {% for project in projects %}
+            <div class="project-card">
+                <h3>{{ project.title }}</h3>
+                <p><strong>Tipo:</strong> {{ project.get_type_display }}</p>
+                <p><strong>Subido por:</strong> {{ project.uploaded_by.username }}</p>
+                <p>{{ project.description|truncatewords:20 }}</p>
+
+                <!-- Estrellas (por ahora fijo a 5) -->
+                <div class="stars">
+                    ★★★★★
+                </div>
+
+                {% if project.is_free %}
+                    <p><strong class="text-green-600">Gratis</strong></p>
+                {% else %}
+                    <p><strong>Precio:</strong> ${{ project.price }}</p>
+                {% endif %}
+                <p>
+                    <strong>Categorías:</strong>
+                    {% for cat in project.categories.all %}
+                        {{ cat.name }}{% if not forloop.last %}, {% endif %}
+                    {% endfor %}
+                </p>
+                <a href="{% url 'project_detail' project.pk %}">Ver proyecto</a>
+            </div>
+            {% endfor %}
+        {% else %}
+            <p>No se encontraron proyectos.</p>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Select2 init -->
+<script>
+    $(document).ready(function() {
+        $('#category-select').select2({
+            placeholder: 'Selecciona categorías...',
+            allowClear: true,
+            width: 'resolve'
+        });
+    });
+</script>
+{% endblock %}
+
+
+
+
+
+
+
+ {% endcomment %}

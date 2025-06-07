@@ -1,0 +1,510 @@
+
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}CodeMarket{% endblock %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Fuente y estilos básicos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #1a202c;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        /* NAVBAR COMO EN LA IMAGEN */
+        .navbar {
+            background: #1a1d24;
+            padding: 1rem 0;
+            border-bottom: 1px solid #2d3748;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .navbar-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .navbar-brand {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+            color: white;
+            font-weight: 700;
+            font-size: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .navbar-brand:hover {
+            color: #667eea;
+            text-decoration: none;
+        }
+
+        .navbar-brand i {
+            font-size: 1.8rem;
+            color: #667eea;
+        }
+
+        .navbar-nav {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .navbar a:not(.navbar-brand), .navbar form button {
+            color: #a0aec0;
+            text-decoration: none;
+            font-weight: 500;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 0.95rem;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .navbar a:not(.navbar-brand):hover, .navbar form button:hover {
+            background: #2d3748;
+            color: white;
+            text-decoration: none;
+        }
+
+        /* Botón de Subir */
+        .upload-btn {
+            background: #4a5568 !important;
+            color: white !important;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .upload-btn:hover {
+            background: #667eea !important;
+        }
+
+        /* Botón de Mis proyectos */
+        .profile-btn {
+            background: transparent !important;
+            color: #a0aec0 !important;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .profile-btn:hover {
+            background: #2d3748 !important;
+            color: white !important;
+        }
+
+        /* Botón de Salir/Logout */
+        .logout-btn {
+            background: #e91e63 !important;
+            color: white !important;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 25px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .logout-btn:hover {
+            background: #ad1457 !important;
+        }
+
+        /* Botones de Login y Signup */
+        .login-btn {
+            background: #4a5568 !important;
+            color: white !important;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .login-btn:hover {
+            background: #667eea !important;
+        }
+
+        .signup-btn {
+            background: #e91e63 !important;
+            color: white !important;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 25px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .signup-btn:hover {
+            background: #ad1457 !important;
+        }
+
+        /* CONTENEDOR PRINCIPAL */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0;
+            background: transparent;
+            min-height: calc(100vh - 140px);
+        }
+
+        /* FOOTER MODERNO */
+        footer {
+            background: #1a1d24;
+            border-top: 1px solid #2d3748;
+            padding: 2rem 0;
+            text-align: center;
+            color: #a0aec0;
+            font-size: 0.9rem;
+            font-weight: 400;
+            margin-top: auto;
+        }
+
+        .footer-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .footer-links a {
+            color: #a0aec0;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .footer-links a:hover {
+            color: #667eea;
+        }
+
+        .footer-social {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .footer-social a {
+            color: #a0aec0;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+            padding: 0.5rem;
+            border-radius: 50%;
+            background: #2d3748;
+        }
+
+        .footer-social a:hover {
+            color: #667eea;
+            background: #4a5568;
+        }
+
+        .copyright {
+            font-size: 0.8rem;
+            opacity: 0.6;
+            margin-top: 1rem;
+            text-align: center;
+        }
+
+        /* ANIMACIONES Y EFECTOS */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .container {
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        /* RESPONSIVE DESIGN */
+        @media (max-width: 768px) {
+            .navbar-content {
+                padding: 0 1rem;
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .navbar-brand {
+                font-size: 1.3rem;
+            }
+
+            .navbar-nav {
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 0.5rem;
+            }
+
+            .navbar a, .navbar form button {
+                padding: 0.5rem 1rem;
+                font-size: 0.9rem;
+            }
+
+            .footer-content {
+                padding: 0 1rem;
+            }
+
+            .footer-links {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+
+            .footer-social {
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .navbar-brand {
+                font-size: 1.2rem;
+            }
+
+            .navbar-nav {
+                flex-direction: column;
+                width: 100%;
+                gap: 0.5rem;
+            }
+
+            .navbar a, .navbar form button {
+                width: 100%;
+                text-align: center;
+                padding: 0.75rem;
+            }
+        }
+
+        /* SCROLL PERSONALIZADO */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #2d3748;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #4a5568;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #667eea;
+        }
+    </style>
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar-content">
+            <a href="{% url 'home' %}" class="navbar-brand">
+                <i class="fas fa-code"></i>
+                <span>CODEMARKET</span>
+            </a>
+            
+            <div class="navbar-nav">
+                {% if user.is_authenticated %}
+                    <a href="{% url 'upload_project' %}" class="upload-btn">
+                        <i class="fas fa-upload"></i> Subir
+                    </a>
+                    <a href="{% url 'profile' %}" class="profile-btn">
+                        <i class="fas fa-user"></i> Mis proyectos
+                    </a>
+                    <form action="{% url 'logout' %}" method="post" style="display:inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="logout-btn">
+                            <i class="fas fa-sign-out-alt"></i> Salir
+                        </button>
+                    </form>
+                {% else %}
+                    <a href="{% url 'login' %}" class="login-btn">
+                        <i class="fas fa-sign-in-alt"></i> Entrar
+                    </a>
+                    <a href="{% url 'signup' %}" class="signup-btn">
+                        <i class="fas fa-user-plus"></i> Registro
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        {% block content %}
+        {% endblock %}
+    </div>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-links">
+                <a href="{% url 'home' %}">Inicio</a>
+                <a href="#">Términos</a>
+                <a href="#">Privacidad</a>
+                <a href="#">Contacto</a>
+                <a href="#">API</a>
+            </div>
+            
+            <div class="footer-social">
+                <a href="#" title="GitHub"><i class="fab fa-github"></i></a>
+                <a href="#" title="Twitter"><i class="fab fa-twitter"></i></a>
+                <a href="#" title="Discord"><i class="fab fa-discord"></i></a>
+                <a href="#" title="LinkedIn"><i class="fab fa-linkedin"></i></a>
+            </div>
+            
+            <div class="copyright">
+                &copy; 2025 GitShare. Todos los derechos reservados. 
+                <br>Hecho con <i class="fas fa-heart" style="color: #e91e63;"></i> para la comunidad de desarrolladores.
+            </div>
+        </div>
+    </footer>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+{% comment %} <!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}GitShare{% endblock %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Fuente y estilos básicos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f6f8fa;
+            color: #24292e;
+            margin: 0;
+            padding: 0;
+        }
+
+        .navbar {
+            background-color: #24292e;
+            color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .navbar a, .navbar form button {
+            color: white;
+            text-decoration: none;
+            margin-left: 1rem;
+            font-weight: bold;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: inherit;
+            padding: 0;
+        }
+
+        .navbar a:hover, .navbar form button:hover {
+            text-decoration: underline;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        footer {
+            margin-top: 2rem;
+            padding: 1rem;
+            text-align: center;
+            color: #888;
+            font-size: 14px;
+        }
+    </style>
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+   <div class="navbar">
+        <div>
+            <a href="{% url 'home' %}" style="color:white;"><i class="fas fa-code-branch"></i> <strong>GitShare</strong></a>
+        </div>
+        <div>
+            {% if user.is_authenticated %}
+                <a href="{% url 'upload_project' %}">Subir</a>
+                <a href="{% url 'profile' %}">Mis proyectos</a>
+                <form action="{% url 'logout' %}" method="post" style="display:inline;">
+                    {% csrf_token %}
+                    <button type="submit">Salir</button>
+                </form>
+            {% else %}
+                <a href="{% url 'login' %}">Entrar</a>
+                <a href="{% url 'signup' %}">Registro</a>
+            {% endif %}
+        </div>
+    </div>
+
+
+    <div class="container">
+        {% block content %}
+        {% endblock %}
+    </div>
+
+    <footer>
+        &copy; 2025 GitShare. Todos los derechos reservados.
+    </footer>
+</body>
+</html> {% endcomment %}

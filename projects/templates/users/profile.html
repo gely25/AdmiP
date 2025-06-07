@@ -1,0 +1,296 @@
+{% extends 'base.html' %}
+{% block title %}Mi Perfil{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
+    <div class="container mx-auto px-6 py-8">
+        <!-- Header -->
+        <div class="mb-8">
+            <div class="bg-slate-800/50 backdrop-blur-sm rounded-2xl p-6 border border-slate-700/50">
+                <div class="flex items-center justify-between mb-6">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl flex items-center justify-center">
+                            <span class="text-white text-xl">📁</span>
+                        </div>
+                        <h1 class="text-3xl font-bold text-white">Mis Proyectos</h1>
+                    </div>
+                    <a href="{% url 'download_history' %}" 
+                       class="flex items-center gap-2 px-4 py-2 bg-slate-700/50 hover:bg-slate-600/50 text-slate-300 hover:text-white rounded-lg transition-all">
+                        <span>📥</span>
+                        <span>Historial</span>
+                    </a>
+                </div>
+
+                <!-- Formulario de filtros -->
+                <form method="get" class="bg-slate-700/30 rounded-xl p-4">
+                    <div class="flex flex-col md:flex-row gap-4">
+                        <div class="flex-1">
+                            <input type="text" name="q" value="{{ query }}" 
+                                   placeholder="Buscar proyectos..."
+                                   class="w-full px-4 py-2 bg-slate-600/50 border border-slate-500/50 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/50">
+                        </div>
+                        <div class="flex items-center gap-4">
+                            <label class="flex items-center gap-2 text-slate-300">
+                                <input type="checkbox" name="free" {% if is_free %}checked{% endif %}
+                                       class="rounded bg-slate-600 border-slate-500">
+                                <span>Solo gratuitos</span>
+                            </label>
+                            <button type="submit" 
+                                    class="px-6 py-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-lg font-medium transition-all">
+                                Filtrar
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Grid de proyectos -->
+        {% if projects %}
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {% for project in projects %}
+                <div class="bg-slate-800/60 backdrop-blur-sm rounded-2xl p-6 border border-slate-700/50 hover:border-purple-500/50 transition-all duration-300 hover:transform hover:-translate-y-1 hover:shadow-2xl">
+                    
+                    <!-- Título -->
+                    <h3 class="text-xl font-bold text-white mb-3 line-clamp-2">
+                        {{ project.title }}
+                    </h3>
+                    
+                    <!-- Info del proyecto -->
+                    <div class="space-y-2 mb-4">
+                        <div class="flex justify-between text-sm">
+                            <span class="text-slate-400">Tipo:</span>
+                            <span class="text-slate-300">{{ project.project_type|default:"General" }}</span>
+                        </div>
+                        <div class="flex justify-between text-sm">
+                            <span class="text-slate-400">Por:</span>
+                            <span class="text-slate-300">{{ project.user.username }}</span>
+                        </div>
+                    </div>
+
+                    <!-- Descripción -->
+                    <p class="text-slate-400 text-sm mb-4 line-clamp-3">
+                        {{ project.description|default:"Sin descripción disponible" }}
+                    </p>
+
+                    <!-- Rating -->
+                    <div class="flex mb-4">
+                        {% for i in "12345" %}
+                        <span class="text-yellow-400">⭐</span>
+                        {% endfor %}
+                    </div>
+
+                    <!-- Precio -->
+                    <div class="mb-4">
+                        {% if project.is_free %}
+                            <span class="inline-flex items-center px-3 py-1 bg-emerald-500/20 text-emerald-400 rounded-full text-sm font-medium border border-emerald-500/30">
+                                ✨ GRATIS
+                            </span>
+                        {% else %}
+                            <span class="inline-flex items-center px-3 py-1 bg-orange-500/20 text-orange-400 rounded-full text-sm font-medium border border-orange-500/30">
+                                💰 ${{ project.price }}
+                            </span>
+                        {% endif %}
+                    </div>
+
+                    <!-- Categorías -->
+                    {% if project.categories.all %}
+                    <div class="mb-6">
+                        <p class="text-xs text-slate-500 mb-2">Categorías:</p>
+                        <div class="flex flex-wrap gap-1">
+                            {% for category in project.categories.all|slice:":4" %}
+                            <span class="px-2 py-1 bg-slate-700/50 text-slate-400 rounded text-xs">
+                                {{ category.name }}
+                            </span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <!-- Botones -->
+                    <div class="space-y-2">
+                        <a href="{% url 'project_detail' project.pk %}" 
+                           class="w-full flex items-center justify-center gap-2 py-2 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-medium rounded-lg transition-all">
+                            <span>👁️</span>
+                            <span>Ver proyecto</span>
+                        </a>
+                        
+                        <div class="flex gap-2">
+                            <a href="{% url 'edit_project' project.pk %}" 
+                               class="flex-1 flex items-center justify-center gap-1 py-2 bg-amber-600/20 hover:bg-amber-600/30 text-amber-400 rounded-lg text-xs transition-all border border-amber-600/20">
+                                ✏️ Editar
+                            </a>
+                            
+                            <form action="{% url 'delete_project' project.pk %}" method="post"
+                                  onsubmit="return confirm('¿Eliminar este proyecto?');"
+                                  class="flex-1">
+                                {% csrf_token %}
+                                <button type="submit" 
+                                        class="w-full flex items-center justify-center gap-1 py-2 bg-red-600/20 hover:bg-red-600/30 text-red-400 rounded-lg text-xs transition-all border border-red-600/20">
+                                    🗑️ Eliminar
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <!-- Estado vacío -->
+            <div class="text-center py-16">
+                <div class="bg-slate-800/50 backdrop-blur-sm rounded-2xl p-12 border border-slate-700/50 max-w-md mx-auto">
+                    <div class="w-20 h-20 bg-slate-700/50 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <span class="text-4xl">📂</span>
+                    </div>
+                    <h3 class="text-xl font-semibold text-white mb-3">No hay proyectos</h3>
+                    <p class="text-slate-400 mb-6">
+                        No tienes proyectos que coincidan con los filtros.
+                    </p>
+                    <a href="{% url 'upload_project' %}" 
+                       class="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-medium rounded-lg transition-all">
+                        <span>➕</span>
+                        <span>Subir proyecto</span>
+                    </a>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<style>
+/* Utilidades adicionales */
+.line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.line-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* Efectos de hover suaves */
+.hover\:-translate-y-1:hover {
+    --tw-translate-y: -0.25rem;
+    transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
+}
+
+/* Backdrop blur personalizado */
+.backdrop-blur-sm {
+    backdrop-filter: blur(8px);
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+    width: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: rgba(51, 65, 85, 0.3);
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(124, 58, 237, 0.5);
+    border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(124, 58, 237, 0.7);
+}
+</style>
+{% endblock %}
+
+
+
+
+
+
+
+
+
+{% comment %} {% extends 'base.html' %}
+
+{% block title %}Mi Perfil{% endblock %}
+
+{% block content %}
+<div class="container py-6">
+    <div class="bg-white shadow rounded-lg p-6">
+
+        <div class="flex justify-between items-center mb-4">
+            <h2 class="text-2xl font-bold">Mis Proyectos</h2>
+            <a href="{% url 'download_history' %}" class="text-sm text-blue-600 hover:underline">
+                📥 Ver historial de descargas
+            </a>
+        </div>
+
+        <form method="get" class="mb-6 flex flex-wrap gap-4">
+            <input type="text" name="q" value="{{ query }}" placeholder="Buscar proyectos..." 
+                   class="border rounded px-4 py-2 w-full md:w-auto">
+
+            <label class="flex items-center gap-2">
+                <input type="checkbox" name="free" {% if is_free %}checked{% endif %}>
+                <span>Mostrar solo gratuitos</span>
+            </label>
+
+            <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+                Filtrar
+            </button>
+        </form>
+
+        {% if projects %}
+            <ul class="grid gap-4 md:grid-cols-2">
+                {% for project in projects %}
+                <li class="border rounded p-4 shadow-sm bg-gray-50 hover:shadow transition">
+                    <h3 class="text-lg font-semibold">{{ project.title }}</h3>
+                    <p class="text-sm text-gray-600">{{ project.description|default:"Sin descripción" }}</p>
+                    <p class="mt-2 text-sm">
+                        {% if project.is_free %}
+                            <span class="text-green-600 font-semibold">Gratis</span>
+                        {% else %}
+                            <span class="text-blue-600 font-semibold">Precio: ${{ project.price }}</span>
+                        {% endif %}
+                    </p>
+                    <div class="mt-3 flex flex-wrap gap-2">
+                        <a href="{% url 'project_detail' project.pk %}" 
+                           class="text-blue-500 hover:underline text-sm">
+                            Ver detalles →
+                        </a>
+                        <a href="{% url 'edit_project' project.pk %}" 
+                           class="text-yellow-600 hover:underline text-sm">
+                            ✏️ Editar
+                        </a>
+                        <form action="{% url 'delete_project' project.pk %}" method="post" 
+                              onsubmit="return confirm('¿Estás seguro de eliminar este proyecto?');"
+                              class="inline">
+                            {% csrf_token %}
+                            <button type="submit" class="text-red-600 hover:underline text-sm">
+                                🗑️ Eliminar
+                            </button>
+                        </form>
+                    </div>
+                </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p class="text-gray-600">No has subido proyectos que coincidan con los filtros.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+
+ {% endcomment %}
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,758 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  {% load static %}
+  
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{title}}</title>
+  <!-- Bootstrap CSS -->
+  <link href={% static 'css/bootstrap.min.css' %} rel="stylesheet">
+  <!-- Font Awesome -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!--  FAVICO --->
+  <link rel="shortcut icon" type="image/png" href="{% static 'img/Nomina.png' %}">
+  <style>
+    :root {
+      --primary-color: #031926;      /* Color principal - azul oscuro */
+      --secondary-color: #2CA58D;    /* Color secundario - verde agua */
+      --accent-color: #84BC9C;       /* Color acento - verde claro */
+      --light-color: #F5F5F5;        /* Gris muy claro para fondos */
+      --light-accent: #E9ECEF;       /* Gris más oscuro para contrastes en fondos */
+      --text-color: #333;            /* Color de texto principal */
+      --text-light: #ffffff;         /* Color de texto claro */
+      --text-muted: #6C757D;         /* Color de texto secundario */
+      --border-radius: 10px;         /* Radio de borde general */
+      --shadow-sm: 0 2px 6px rgba(0, 0, 0, 0.08);
+      --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.1);
+      --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.15);
+      --transition: all 0.3s ease;
+    }
+    
+    body {
+      font-family: 'Poppins', sans-serif;
+      color: var(--text-color);
+      overflow-x: hidden;
+      background-color: var(--light-color);
+      line-height: 1.6;
+    }
+    
+    /* Navbar styles */
+    .navbar {
+      background-color: var(--primary-color) !important;
+      box-shadow: var(--shadow-md);
+      padding: 12px 0;
+    }
+    
+    .navbar-brand {
+      font-weight: 700;
+      color: var(--text-light) !important;
+      font-size: 1.5rem;
+      letter-spacing: 0.5px;
+    }
+    
+    .navbar-brand span {
+      color: var(--accent-color) !important;
+      font-weight: 800;
+    }
+    
+    .nav-link {
+      font-weight: 500;
+      color: var(--text-light) !important;
+      margin: 0 10px;
+      transition: var(--transition);
+      padding: 8px 0;
+      position: relative;
+    }
+    
+    .nav-link:after {
+      content: '';
+      position: absolute;
+      width: 0;
+      height: 2px;
+      background: var(--accent-color);
+      bottom: 0;
+      left: 0;
+      transition: var(--transition);
+    }
+    
+    .nav-link:hover:after, .nav-link.active:after {
+      width: 100%;
+    }
+
+    .nav-link:hover, .nav-link.active {
+      color: var(--accent-color) !important;
+    }
+    
+    .navbar-toggler {
+      border-color: var(--text-light);
+      outline: none;
+      color: var(--text-light) !important;
+      padding: 0;
+    }
+    
+    .navbar-toggler-icon {
+      background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28255, 255, 255, 1%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e") !important;
+    }
+
+    /* Button styles */
+    .btn {
+      border-radius: 50px;
+      font-weight: 600;
+      padding: 10px 24px;
+      transition: var(--transition);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      font-size: 0.85rem;
+      box-shadow: var(--shadow-sm);
+    }
+    
+    .btn-sm {
+      padding: 6px 16px;
+      font-size: 0.75rem;
+    }
+
+    .btn-primary {
+      background-color: var(--secondary-color);
+      border-color: var(--secondary-color);
+    }
+    
+    .btn-primary:hover {
+      background-color: var(--accent-color);
+      border-color: var(--accent-color);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+    }
+    
+    .btn-outline-primary {
+      border-color: var(--secondary-color);
+      color: var(--secondary-color);
+    }
+    
+    .btn-outline-primary:hover, .btn-outline-primary:focus {
+      background-color: var(--secondary-color);
+      color: white;
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+    }
+    
+    /* Hero section */
+    .hero {
+      background-color: var(--primary-color);
+      background-image: linear-gradient(135deg, var(--primary-color) 0%, #253B56 100%);
+      padding: 120px 0 100px;
+      position: relative;
+      overflow: hidden;
+      color: var(--text-light);
+    }
+
+    .hero::after {
+      content: '';
+      position: absolute;
+      width: 200px;
+      height: 200px;
+      border-radius: 50%;
+      background-color: rgba(44, 239, 196, 0.08);
+      bottom: -80px;
+      left: 10%;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      width: 300px;
+      height: 300px;
+      border-radius: 50%;
+      background-color: rgba(63, 201, 166, 0.1);
+      top: -100px;
+      right: -100px;
+    }
+    
+    .hero p {
+      font-size: 1.2rem;
+      margin-bottom: 30px;
+      color: rgba(255, 255, 255, 0.85);
+      max-width: 600px;
+    }
+    
+    .hero-img {
+      max-width: 100%;
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow-lg);
+      animation: float 6s ease-in-out infinite;
+    }
+    
+    @keyframes float {
+      0% { transform: translateY(0px); }
+      50% { transform: translateY(-15px); }
+      100% { transform: translateY(0px); }
+    }
+
+    /* Stats section */
+    .stats-section {
+      margin-top: -50px;
+      position: relative;
+      z-index: 10;
+    }
+    
+    .stats-card {
+      background-color: white;
+      padding: 30px 20px;
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow-md);
+      text-align: center;
+      height: 100%;
+      transition: var(--transition);
+      border-bottom: 4px solid var(--accent-color);
+    }
+    
+    .stats-card:hover {
+      transform: translateY(-5px);
+      box-shadow: var(--shadow-lg);
+      border-bottom-color: var(--secondary-color);
+    }
+    
+    .stats-icon {
+      width: 60px;
+      height: 60px;
+      background-color: rgba(132, 188, 156, 0.2);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 15px;
+      color: var(--secondary-color);
+      font-size: 1.4rem;
+      transition: var(--transition);
+    }
+    
+    .stats-card:hover .stats-icon {
+      background-color: var(--secondary-color);
+      color: white;
+      transform: rotate(360deg);
+    }
+    
+    .stats-number {
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: var(--primary-color);
+      margin-bottom: 5px;
+    }
+    
+    .stats-text {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    
+    /* Features section */
+    .section-title {
+      position: relative;
+      margin-bottom: 60px;
+      z-index: 1;
+    }
+    
+    .section-title h2 {
+      position: relative;
+      display: inline-block;
+      font-weight: 800;
+      margin-bottom: 15px;
+    }
+    
+    .section-title h2::after {
+      content: '';
+      position: absolute;
+      height: 8px;
+      width: 50%;
+      background-color: var(--accent-color);
+      opacity: 0.3;
+      bottom: 0;
+      left: 25%;
+      border-radius: 30px;
+    }
+    
+    .section-title p {
+      max-width: 700px;
+      margin: 0 auto;
+      color: var(--text-muted);
+    }
+    
+    .feature-box {
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+      transition: all 0.3s ease;
+      height: 100%;
+      background-color: white;
+      border-top: 4px solid var(--secondary-color);
+    }
+    
+    .feature-box:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+    }
+    
+    .feature-icon {
+      width: 70px;
+      height: 70px;
+      background-color: rgba(44, 165, 141, 0.15);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 20px;
+      color: var(--secondary-color);
+      font-size: 1.5rem;
+    }
+    
+    .feature-title {
+      font-weight: 600;
+      margin-bottom: 15px;
+      color: var(--primary-color);
+    }
+    
+    section.bg-light {
+      background-color: #f9f9f9 !important;
+    }
+    
+    section.py-5 h2 {
+      color: var(--primary-color);
+    }
+    
+    .text-primary {
+      color: var(--secondary-color) !important;
+    }
+    
+    /* Dropdown menu styles */
+    .dropdown-menu {
+      background-color: white;
+      border: none;
+      border-radius: 8px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+      padding: 10px 0;
+      margin-top: 10px;
+    }
+    
+    .dropdown-item {
+      color: var(--text-color);
+      padding: 8px 20px;
+      font-size: 0.9rem;
+      transition: all 0.2s ease;
+    }
+    
+    .dropdown-item:hover, .dropdown-item:focus {
+      background-color: rgba(44, 165, 141, 0.1);
+      color: var(--secondary-color);
+      transform: translateX(5px);
+    }
+    
+    .dropdown-toggle::after {
+      margin-left: 0.5em;
+      vertical-align: middle;
+    }
+    
+    .navbar .dropdown:hover .dropdown-menu {
+      display: block;
+    }
+    
+    /* Footer styles */
+    footer {
+      background-color: var(--primary-color);
+      color: rgba(255, 255, 255, 0.7);
+      padding: 70px 0 20px;
+    }
+    
+    .footer-heading {
+      color: white;
+      font-weight: 600;
+      margin-bottom: 25px;
+    }
+    
+    .footer-link {
+      color: rgba(255, 255, 255, 0.7);
+      margin-bottom: 15px;
+      display: block;
+      transition: all 0.3s ease;
+      text-decoration: none;
+    }
+    
+    .footer-link:hover {
+      color: var(--accent-color);
+      transform: translateX(5px);
+    }
+    
+    .social-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background-color: rgba(255, 255, 255, 0.1);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 10px;
+      color: white;
+      transition: all 0.3s ease;
+      text-decoration: none;
+    }
+    
+    .social-icon:hover {
+      background-color: var(--secondary-color);
+      transform: translateY(-5px);
+    }
+    
+    .copyright {
+      padding-top: 20px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      margin-top: 50px;
+    }
+    
+    .floating-btn {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background-color: var(--secondary-color);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+      z-index: 999;
+      transition: all 0.3s ease;
+    }
+    
+    .floating-btn:hover {
+      background-color: var(--accent-color);
+      transform: translateY(-5px);
+    }
+    
+    /* Responsive styles */
+    @media (max-width: 991.98px) {
+      .hero h1 {
+        font-size: 2.5rem;
+      }
+      
+      .hero-img {
+        margin-top: 50px;
+      }
+    }
+    
+    @media (max-width: 767.98px) {
+      .hero {
+        padding: 70px 0;
+      }
+      
+      .hero h1 {
+        font-size: 2rem;
+      }
+      
+      .hero p {
+        font-size: 1rem;
+      }
+      
+      .feature-box, .testimonial {
+        margin-bottom: 30px;
+      }
+    }
+  </style>
+  {% block extra_css %}{% endblock %}
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-dark sticky-top">
+    <div class="container">
+      <a class="navbar-brand" href="{% url 'home' %}">Sistema de <span>Nómina</span></a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav mx-auto">
+          {% if user.is_authenticated %}
+            <li class="nav-item">
+              <a class="nav-link active" href="{% url 'home' %}">Inicio</a>
+            </li>
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="empleadosDropdown" role="button" data-bs-toggle="dropdown">
+                Empleados
+              </a>
+              <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="{% url 'Nomina:listar_empleados' %}">Listar Empleados</a></li>
+                <li><a class="dropdown-item" href="{% url 'Nomina:crear_empleado' %}">Nuevo Empleado</a></li>
+              </ul>
+            </li>
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="rolesDropdown" role="button" data-bs-toggle="dropdown">
+                Roles de Pago
+              </a>
+              <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="{% url 'Nomina:listar_roles' %}">Listar Roles</a></li>
+                <li><a class="dropdown-item" href="{% url 'Nomina:crear_rol' %}">Nuevo Rol</a></li>
+              </ul>
+            </li>
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="catalogosDropdown" role="button" data-bs-toggle="dropdown">
+                Catálogos
+              </a>
+              <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="{% url 'Nomina:listar_cargos' %}">Cargos</a></li>
+                <li><a class="dropdown-item" href="{% url 'Nomina:listar_departamentos' %}">Departamentos</a></li>
+                <li><a class="dropdown-item" href="{% url 'Nomina:listar_tipos_contrato' %}">Tipos de Contrato</a></li>
+                <li><a class="dropdown-item" href="{% url 'Nomina:listar_prestamos' %}">Préstamos</a></li>
+
+
+              </ul>
+            </li>
+          {% endif %}
+        </ul>
+        <div class="d-flex align-items-center">
+          {% if user.is_authenticated %}
+            <div class="me-3 d-flex align-items-center text-light">
+              <i class="fas fa-user-circle me-2"></i>
+              <span>{{ user.username }}</span>
+            </div>
+            <a class="btn btn-outline-primary" href="{% url 'Nomina:logout' %}">
+              <i class="fas fa-sign-out-alt me-1"></i> Salir
+            </a>
+          {% else %}
+            <a class="btn btn-outline-primary me-2" href="{% url 'Nomina:signin' %}">Iniciar Sesión</a>
+            <a class="btn btn-primary" href="{% url 'Nomina:signup' %}">Registrarse</a>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  {% block content %}
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="container">
+      <div class="row align-items-center">
+        <div class="col-lg-6">
+          <h1>Gestión Inteligente de Nómina</h1>
+          <p>Optimiza el proceso de pagos a empleados, controla la información de personal y simplifica la gestión de recursos humanos con nuestra plataforma integral.</p>
+          <div class="d-flex flex-wrap gap-2">
+            <a href="{% url 'Nomina:listar_empleados' %}" class="btn btn-primary">
+              <i class="fas fa-users me-2"></i>Gestionar Empleados
+            </a>
+            <a href="{% url 'Nomina:listar_roles' %}" class="btn btn-outline-primary">
+              <i class="fas fa-file-invoice-dollar me-2"></i>Ver Roles de Pago
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Stats Section -->
+  <section class="stats-section py-4">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-3 col-6 mb-4">
+          <div class="stats-card">
+            <div class="stats-icon">
+              <i class="fas fa-users"></i>
+            </div>
+            <a href="{% url 'Nomina:listar_empleados' %}">
+              <h3 class="stats-number counter">{{ total_empleados }}</h3>
+              <p class="stats-text">Empleados</p>
+            </a>
+          </div>
+        </div>
+        <div class="col-md-3 col-6 mb-4">
+          <div class="stats-card">
+            <div class="stats-icon">
+              <i class="fas fa-briefcase"></i>
+            </div>
+            <a href="{% url 'Nomina:listar_cargos' %}">
+              <h3 class="stats-number counter">{{ total_cargos }}</h3>
+              <p class="stats-text">Cargos</p>
+            </a>
+          </div>
+        </div>
+        <div class="col-md-3 col-6 mb-4">
+          <div class="stats-card">
+            <div class="stats-icon">
+              <i class="fas fa-building"></i>
+            </div>
+            <a href="{% url 'Nomina:listar_departamentos' %}">
+              <h3 class="stats-number counter">{{ total_departamentos }}</h3>
+              <p class="stats-text">Departamentos</p>
+            </a>
+          </div>
+        </div>
+        <div class="col-md-3 col-6 mb-4">
+          <div class="stats-card">
+            <div class="stats-icon">
+              <i class="fas fa-file-invoice-dollar"></i>
+            </div>
+            <a href="{% url 'Nomina:listar_roles' %}">
+              <h3 class="stats-number counter">{{ total_roles }}</h3>
+              <p class="stats-text">Roles de Pago</p>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  
+  <!-- Features Section -->
+  <section class="py-5">
+    <div class="container">
+      <div class="row justify-content-center text-center mb-5">
+        <div class="col-lg-6">
+          <h2 class="fw-bold mb-3">Funcionalidades principales</h2>
+          <p class="text-muted">Descubre cómo nuestro Sistema de Nómina puede optimizar la gestión de recursos humanos y pagos de tu empresa.</p>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-lg-4 col-md-6 mb-4">
+          <div class="feature-box">
+            <div class="feature-icon">
+              <i class="fas fa-user-tie"></i>
+            </div>
+            <h4 class="feature-title">Gestión de Empleados</h4>
+            <p>Registro completo de datos personales, asignación de cargos, departamentos y tipos de contrato. Búsqueda avanzada por múltiples criterios.</p>
+            <a href="{% url 'Nomina:listar_empleados' %}" class="btn btn-sm btn-outline-primary mt-2">Ir a Empleados</a>
+          </div>
+        </div>
+        <div class="col-lg-4 col-md-6 mb-4">
+          <div class="feature-box">
+            <div class="feature-icon">
+              <i class="fas fa-sitemap"></i>
+            </div>
+            <h4 class="feature-title">Configuración Organizacional</h4>
+            <p>Administra cargos, departamentos y tipos de contrato para mantener actualizada la estructura de tu empresa.</p>
+            <a href="{% url 'Nomina:listar_departamentos' %}" class="btn btn-sm btn-outline-primary mt-2">Ver Departamentos</a>
+          </div>
+        </div>
+        <div class="col-lg-4 col-md-6 mb-4">
+          <div class="feature-box">
+            <div class="feature-icon">
+              <i class="fas fa-calculator"></i>
+            </div>
+            <h4 class="feature-title">Cálculo automático</h4>
+            <p>Generación de roles de pago con cálculos automatizados de ingresos, descuentos y valores netos a recibir.</p>
+            <a href="{% url 'Nomina:listar_roles' %}" class="btn btn-sm btn-outline-primary mt-2">Ver Roles</a>
+          </div>
+        </div>
+        <div class="col-lg-4 col-md-6 mb-4">
+          <div class="feature-box">
+            <div class="feature-icon">
+              <i class="fas fa-search"></i>
+            </div>
+            <h4 class="feature-title">Búsquedas avanzadas</h4>
+            <p>Filtros por múltiples campos que facilitan la consulta de información específica en todos los módulos del sistema.</p>
+            <a href="{% url 'Nomina:listar_empleados' %}" class="btn btn-sm btn-outline-primary mt-2">Buscar Empleados</a>
+          </div>
+        </div>
+        <div class="col-lg-4 col-md-6 mb-4">
+          <div class="feature-box">
+            <div class="feature-icon">
+              <i class="fas fa-lock"></i>
+            </div>
+            <h4 class="feature-title">Control de acceso</h4>
+            <p>Sistema de autenticación y permisos de usuario que garantiza la seguridad y confidencialidad de la información.</p>
+            {% if user.is_authenticated %}
+              <a href="{% url 'Nomina:logout' %}" class="btn btn-sm btn-outline-primary mt-2">Cerrar Sesión</a>
+            {% else %}
+              <a href="{% url 'Nomina:signin' %}" class="btn btn-sm btn-outline-primary mt-2">Iniciar Sesión</a>
+            {% endif %}
+          </div>
+        </div>
+        <div class="col-lg-4 col-md-6 mb-4">
+          <div class="feature-box">
+            <div class="feature-icon">
+              <i class="fas fa-file-export"></i>
+            </div>
+            <h4 class="feature-title">Reportes detallados</h4>
+            <p>Generación de informes de nómina, históricos de pagos y estadísticas para la toma de decisiones.</p>
+            <a href="{% url 'Nomina:listar_roles' %}" class="btn btn-sm btn-outline-primary mt-2">Ver Reportes</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Sección CTA para el registro y login -->
+  <section class="py-4 bg-light">
+    <div class="container">
+      <div class="row justify-content-center">
+        <div class="col-md-10">
+          <div class="card shadow border-0">
+            <div class="card-body p-4">
+              <div class="row align-items-center">
+                <div class="col-lg-8 mb-3 mb-lg-0">
+                  <h4 class="fw-bold mb-1">¿Aún no tienes una cuenta?</h4>
+                  <p class="text-muted mb-0">Regístrate para comenzar a gestionar tu nómina de forma eficiente.</p>
+                </div>
+                <div class="col-lg-4 text-lg-end">
+                  {% if user.is_authenticated %}
+                    <a href="{% url 'Nomina:listar_empleados' %}" class="btn btn-primary">Gestionar sistema</a>
+                  {% else %}
+                    <a href="{% url 'Nomina:signup' %}" class="btn btn-primary me-2">Registrarse</a>
+                    <a href="{% url 'Nomina:signin' %}" class="btn btn-outline-primary">Iniciar sesión</a>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  
+  <!-- Footer -->
+  <footer>
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-4 mb-4 mb-lg-0">
+          <h5 class="footer-heading">Sistema de Nómina</h5>
+          <p>Sistema integral para la gestión de nómina y recursos humanos desarrollado con Django.</p>
+          <div class="mt-4">
+            <a href="#" class="social-icon"><i class="fab fa-facebook-f"></i></a>
+            <a href="#" class="social-icon"><i class="fab fa-twitter"></i></a>
+            <a href="#" class="social-icon"><i class="fab fa-linkedin-in"></i></a>
+            <a href="#" class="social-icon"><i class="fab fa-instagram"></i></a>
+          </div>
+        </div>
+        <div class="col-md-4 col-lg-2 mb-4 mb-md-0">
+          <h5 class="footer-heading">Enlaces rápidos</h5>
+          <a class="footer-link">Inicio</a>
+          <a class="footer-link">Empleados</a>
+          <a class="footer-link">Roles de Pago</a>
+        </div>
+
+        <div class="col-md-4 col-lg-4">
+          <h5 class="footer-heading">Integrantes</h5>
+          <p class="mb-3"><i class=" fa-map-marker-alt me-2"></i> Angely Segovia</p>
+          <p class="mb-3"><i class=" fa-phone me-2"></i> Kristel Burgos</p>
+          <p class="mb-3"><i class=" fa-envelope me-2"></i> Daniela Arriaga</p>
+          <p class="mb-3"><i class=" fa-envelope me-2"></i> Laddy Rocha</p>
+        </div>
+      </div>
+      <div class="text-center copyright">
+        <p>© {% now 'Y' %} Nómina. Todos los derechos reservados.</p>
+      </div>
+    </div>
+  </footer>
+  {% endblock content %}
+  
+  <!-- Floating button for quick access -->
+  <a href="#" class="floating-btn" title="Ayuda">
+    <i class="fas fa-question"></i>
+  </a>
+  
+  <script src={% static 'js/bootstrap.min.js' %}></script>
+  <script src={% static 'js/bootstrap.bundle.min.js' %}></script>
+  {% block extra_js %}{% endblock %}
+</body>
+</html>

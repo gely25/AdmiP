@@ -1,0 +1,153 @@
+{% extends 'base.html' %}
+
+{% block extra_css %}
+<style>
+    {{ style_defs|safe }}
+    .category-badge {
+        display: inline-block;
+        background-color: #6c757d; /* gris oscuro */
+        color: white;
+        font-size: 13px;
+        font-weight: 500;
+        padding: 5px 10px;
+        margin: 3px 5px 3px 0;
+        border-radius: 15px;
+    }
+</style>
+{% endblock %}
+
+
+{% block content %}
+<div class="container">
+    <div class="bg-white shadow rounded-lg p-6 mb-6">
+        <h2 class="text-2xl font-bold mb-2">{{ project.title }}</h2>
+        <p class="text-sm text-gray-600 mb-4">
+            Subido por {{ project.uploaded_by.username }} |
+            {% if project.is_free %}
+                <span class="text-green-600 font-semibold">Gratis</span>
+            {% else %}
+                <span class="text-blue-600 font-semibold">Precio: ${{ project.price }}</span>
+            {% endif %}
+        </p>
+
+        <p class="mb-6">{{ project.description|default:"Sin descripción." }}</p>
+
+      {% if project.categories.all %}
+        <div class="mb-4">
+            <strong class="block mb-1 text-gray-700">Categorías:</strong>
+            <div class="flex flex-wrap gap-2">
+                {% for category in project.categories.all %}
+                    <span class="category-badge">{{ category.name }}</span>
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
+
+
+
+        {% if can_download %}
+            <a href="{% url 'download_project_zip' project.pk %}" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
+                Descargar ZIP
+            </a>
+        {% elif not project.is_free and not already_bought %}
+            <form action="{% url 'purchase_project' project.pk %}" method="post" class="mt-4">
+                {% csrf_token %}
+                <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+                    Comprar por ${{ project.price }}
+                </button>
+            </form>
+        {% else %}
+            <p class="text-red-500">Este proyecto requiere compra para poder descargarlo.</p>
+        {% endif %}
+    </div>
+
+    {% if can_download %}
+    <div class="project-viewer bg-white rounded shadow">
+        <div class="project-header p-4 border-b border-gray-200 bg-gray-100">
+            <h3 class="text-lg font-semibold"><i class="fas fa-folder-open"></i> Estructura del Proyecto</h3>
+        </div>
+        <div class="project-content" style="display: flex; min-height: 600px;">
+            <div class="file-tree-panel" style="width: 300px; border-right: 1px solid #d0d7de; background: #fafbfc; overflow-y: auto;">
+                <div id="file-tree" style="padding: 1rem;">
+                    <div class="loading text-gray-500 flex items-center">
+                        <i class="fas fa-spinner mr-2 animate-spin"></i> Cargando árbol...
+                    </div>
+                </div>
+            </div>
+            <div class="file-content-panel" style="flex: 1; display: flex; flex-direction: column;">
+                <div class="file-content-header p-4 border-b border-gray-200 bg-gray-100" id="file-header">
+                    Selecciona un archivo para ver su contenido
+                </div>
+                <div class="file-content-body p-4 overflow-auto" id="file-content">
+                    <div class="empty-state text-center text-gray-400">
+                        <i class="fas fa-file-code text-4xl"></i>
+                        <p class="mt-2">Haz clic en un archivo del árbol para ver su contenido</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.3.12/jstree.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.3.12/themes/default/style.min.css" />
+
+<script>
+    $(document).ready(function() {
+        const folderId = "{{ project.folder_id|default:'' }}";
+        if (folderId.trim() !== '') {
+            $('#file-tree').jstree({
+                'core': {
+                    'data': {
+                        'url': function(node) {
+                            return '/get_directory_tree/?folder_id=' + encodeURIComponent(folderId);
+                        },
+                        'dataType': 'json'
+                    }
+                },
+                'plugins': ['types'],
+                'types': {
+                    'default': { 'icon': 'fas fa-file' },
+                    'folder': { 'icon': 'fas fa-folder' },
+                    'file': { 'icon': 'fas fa-file' }
+                }
+            });
+
+            $('#file-tree').on('select_node.jstree', function (e, data) {
+                const nodeData = data.node.data || {};
+                const fileName = data.node.text;
+                const filePath = nodeData.path;
+
+                $('#file-header').html('<i class="fas fa-file"></i> ' + fileName);
+
+                if (nodeData.binary === true) {
+                    $('#file-content').html(
+                        '<div class="empty-state text-center text-gray-400">' +
+                        '<i class="fas fa-file-image text-4xl"></i>' +
+                        '<p class="mt-2">Este archivo no se puede mostrar (archivo binario)</p>' +
+                        '</div>'
+                    );
+                    return;
+                }
+
+                $('#file-content').html('<div class="loading text-gray-500 flex items-center"><i class="fas fa-spinner mr-2 animate-spin"></i> Cargando archivo...</div>');
+
+                if (filePath) {
+                    $.ajax({
+                        url: '/get_file_content/?path=' + encodeURIComponent(filePath),
+                        method: 'GET',
+                        success: function(response) {
+                            $('#file-content').html(response);
+                        },
+                        error: function(xhr, status, error) {
+                            $('#file-content').html('<div class="text-red-500">Error al cargar el archivo: ' + error + '</div>');
+                        }
+                    });
+                }
+            });
+        }
+    });
+</script>
+{% endblock %}
